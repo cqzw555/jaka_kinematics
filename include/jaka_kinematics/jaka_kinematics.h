@@ -1,4 +1,4 @@
-gfgit #ifndef JAKA_KINEMATICS_H
+#ifndef JAKA_KINEMATICS_H
 #define JAKA_KINEMATICS_H
 #include <math.h>
 #define PI M_PI

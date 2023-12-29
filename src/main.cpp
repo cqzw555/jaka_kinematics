@@ -1,7 +1,7 @@
 #include <math.h>
 #include <vector>
 #include <stdio.h>
-#include "jaka_kinematics.h"
+#include "jaka_kinematics/jaka_kinematics.h"
 using namespace jaka_kinematics;
 
 int main()

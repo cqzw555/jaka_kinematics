@@ -1,5 +1,5 @@
 
-#include "jaka_kinematics.h"
+#include "jaka_kinematics/jaka_kinematics.h"
 
 namespace jaka_kinematics
 {
@@ -278,5 +278,19 @@ namespace jaka_kinematics
                 solution[6 * i + j] = rotate(solution[6 * i + j],joint_min[j],joint_max[j]);
         }
         return num_sols;
+    }
+
+    void to_rpy(double *R,double *rpy)
+    {
+        double *n = R;
+        double *o = R+3;
+        double *a = R+6;
+        
+        double y = atan2(n[1], n[0]);
+        double p = atan2(-n[2], n[0] * cos(y) + n[1] * sin(y));
+        double r = atan2(a[0] * sin(y) - a[1] * cos(y), -o[0] * sin(y) + o[1] * cos(y));
+        *(rpy++) = r;
+        *(rpy++) = p;
+        *(rpy++) = y;
     }
 }
