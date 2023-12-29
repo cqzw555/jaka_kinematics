@@ -4,7 +4,7 @@
 #define PI M_PI
 namespace jaka_kinematics
 {
-    const double ZERO_THRESH = 0.00000001;
+    const double ZERO_THRESH = 1e-8;
 
     // @param q       The 6 joint values
     // @param T       The 4x4 end effector pose in row-major ordering
@@ -30,21 +30,27 @@ namespace jaka_kinematics
     // @return        None
     void from_mat44(double *T, double *trans, double *rot);
 
+    // @param rpy    Euler angles
+    // @param rot    the 3x3 rotate matrix that represents the pose
+    // @return       None
+    void from_rpy(double *rpy, double *rot);
+
     // @param rot    the 3x3 rotate matrix that represents the pose
     // @param rpy    Euler angles
     // @return       None
-    void from_rpy(double *rot, double *rpy);
+    void to_rpy(double *rot, double *rpy);
 
     // Convert the angle between the given min and max
     // @param T       The angle to be entered
     // @param min     The min value to be entered
     // @param max     The max value to be entered
     // @return        The converted angle value
-    double rotate(double t,double min,double max);
-    
+    double rotate(double t, double min, double max);
+
     // Determine the positive or negative of the giving float
     // @param T       double
     // @return        1 if positive else -1
     int SIGN(double x);
-};
+}
+;
 #endif

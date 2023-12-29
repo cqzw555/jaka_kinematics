@@ -11,15 +11,15 @@ namespace jaka_kinematics
     double d5 = 0.113416;
     double d6 = 0.107119;
 
-    double joint_min[6] = {-1.5*PI,-85*PI/180,-175*PI/180,-1.5*PI,-1.5*PI};
-    double joint_max[6] = {1.5*PI,265*PI/180,175*PI/180,1.5*PI,1.5*PI};
-    
+    double joint_min[6] = {-1.5 * PI, -85 * PI / 180, -175 * PI / 180, -1.5 * PI, -1.5 * PI};
+    double joint_max[6] = {1.5 * PI, 265 * PI / 180, 175 * PI / 180, 1.5 * PI, 1.5 * PI};
+
     int SIGN(double x)
     {
         return (x > 0) - (x < 0);
     }
-    
-    double rotate(double t,double min,double max)
+
+    double rotate(double t, double min, double max)
     {
         if (t > 2 * M_PI)
             t -= 2 * M_PI;
@@ -27,7 +27,7 @@ namespace jaka_kinematics
             t += 2 * M_PI;
         return t;
     }
-    
+
     void to_mat44(double *T, double *trans, double *rot)
     {
         for (int i = 0; i < 3; ++i)
@@ -42,7 +42,7 @@ namespace jaka_kinematics
         *(T++) = 1;
     }
 
-    void from_mat44(const double *T, double *trans, double *rot)
+    void from_mat44(double *T, double *trans, double *rot)
     {
         for (int i = 0; i < 3; ++i)
         {
@@ -51,8 +51,8 @@ namespace jaka_kinematics
             *(trans++) = *(T++);
         }
     }
-    
-    void from_rpy(double *rot, double *rpy)
+
+    void from_rpy(double *rpy, double *rot)
     {
         double rx = *(rpy++);
         double ry = *(rpy++);
@@ -105,7 +105,7 @@ namespace jaka_kinematics
         *(T++) = 0;
         *(T++) = 1;
     }
-    
+
     int inverse(double *matrix, double *solution, double q6_des)
     {
         int num_sols = 0;
@@ -180,9 +180,9 @@ namespace jaka_kinematics
                 return num_sols;
             else
             {
-                double div = sqrt(R-d4*d4);
-                q1[0] = -atan2(A,B)+atan2(d4,div);
-                q1[1] = -atan2(A,B)+atan2(d4,-div);
+                double div = sqrt(R - d4 * d4);
+                q1[0] = -atan2(A, B) + atan2(d4, div);
+                q1[1] = -atan2(A, B) + atan2(d4, -div);
             }
         }
         double q5[2][2];
@@ -275,22 +275,25 @@ namespace jaka_kinematics
         for (int i = 0; i < num_sols; i++)
         {
             for (int j = 0; j < 6; j++)
-                solution[6 * i + j] = rotate(solution[6 * i + j],joint_min[j],joint_max[j]);
+                solution[6 * i + j] = rotate(solution[6 * i + j], joint_min[j], joint_max[j]);
         }
         return num_sols;
     }
 
-    void to_rpy(double *R,double *rpy)
+    void to_rpy(double *R, double *rpy)
     {
-        double *n = R;
-        double *o = R+3;
-        double *a = R+6;
-        
-        double y = atan2(n[1], n[0]);
-        double p = atan2(-n[2], n[0] * cos(y) + n[1] * sin(y));
-        double r = atan2(a[0] * sin(y) - a[1] * cos(y), -o[0] * sin(y) + o[1] * cos(y));
-        *(rpy++) = r;
-        *(rpy++) = p;
-        *(rpy++) = y;
+        double sy = sqrt(pow(R[0 * 3 + 0], 2) + pow(R[1 * 3 + 0], 2));
+        if (sy > ZERO_THRESH)
+        {
+            *(rpy++) = atan2(R[2 * 3 + 1], R[2 * 3 + 2]);
+            *(rpy++) = atan2(-R[2 * 3 + 0], sy);
+            *(rpy++) = atan2(R[1 * 3 + 0], R[0 * 3 + 0]);
+        }
+        else
+        {
+            *(rpy++) = atan2(R[1 * 3 + 2], R[1 * 3 + 1]);
+            *(rpy++) = atan2(-R[2 * 3 + 0], sy);
+            *(rpy++) = 0;
+        }
     }
 }
