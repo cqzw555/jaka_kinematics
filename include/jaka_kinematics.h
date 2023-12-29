@@ -35,10 +35,12 @@ namespace jaka_kinematics
     // @return       None
     void from_rpy(double *rot, double *rpy);
 
-    // Convert the angle between 0 and 2*pi
+    // Convert the angle between the given min and max
     // @param T       The angle to be entered
+    // @param min     The min value to be entered
+    // @param max     The max value to be entered
     // @return        The converted angle value
-    double rotate(double t);
+    double rotate(double t,double min,double max);
     
     // Determine the positive or negative of the giving float
     // @param T       double

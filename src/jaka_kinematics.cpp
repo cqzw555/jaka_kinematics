@@ -11,11 +11,15 @@ namespace jaka_kinematics
     double d5 = 0.113416;
     double d6 = 0.107119;
 
+    double joint_min[6] = {-1.5*PI,-85*PI/180,-175*PI/180,-1.5*PI,-1.5*PI};
+    double joint_max[6] = {1.5*PI,265*PI/180,175*PI/180,1.5*PI,1.5*PI};
+    
     int SIGN(double x)
     {
         return (x > 0) - (x < 0);
     }
-    double rotate(double t)
+    
+    double rotate(double t,double min,double max)
     {
         if (t > 2 * M_PI)
             t -= 2 * M_PI;
@@ -23,6 +27,7 @@ namespace jaka_kinematics
             t += 2 * M_PI;
         return t;
     }
+    
     void to_mat44(double *T, double *trans, double *rot)
     {
         for (int i = 0; i < 3; ++i)
@@ -140,11 +145,7 @@ namespace jaka_kinematics
             // ==> (d6*ay - py)c1 + (px - d6*ax)s1 -d4 = 0
             // ==>A = d6*ay - py; B = px - d6*ax; C = -d4;
             // 借助以下结论求解：
-            // Acosx + Bsinx + C = 0
-            // 构造辅助角 phi
-            // cos(phi) = \frac{A}{sqrt(A*A+B*B)}; sin(phi)=\frac{B}{sqrt(A*A+B*B)}; tan(phi) = \frac{B}{A}
-            // Acosx + Bsinx + C = 0  ==> cos(x-phi)+\frac{C}{sqrt(A*A+B*B)} = 0 ==> x-phi= arccos(\frac{-C}{sqrt(A*A+B*B)})
-            // Acosx + Bsinx + C = 0  也可以写成 cos(phi-x)+\frac{C}{sqrt(A*A+B*B)} = 0 后面结果无影响，
+            // Acosx + Bsinx + C = 0 的解为 - atan2(A,B) + atan2(-C,sqrt(A*A+B*B-C*C))
             double B = -(d6 * ax - px);
             double A = d6 * ay - py;
             double R = A * A + B * B;
@@ -179,25 +180,9 @@ namespace jaka_kinematics
                 return num_sols;
             else
             {
-                // arccos 是 x - phi的值; arctan 是 phi 的值
-                // double arccos = acos(-C / sqrt(R)) ;
-                double arccos = acos(d4 / sqrt(R));
-                double arctan = atan2(B, A);
-                // pos 是 x， 是需要求的值; neg 是 2*phi - x 代入原方程式是成立的
-                double pos = arctan + arccos;
-                double neg = arctan - arccos;
-                if (fabs(pos) < ZERO_THRESH)
-                    pos = 0.0;
-                if (fabs(neg) < ZERO_THRESH)
-                    neg = 0.0;
-                if (pos >= 0.0)
-                    q1[0] = pos;
-                else
-                    q1[0] = 2.0 * PI + pos;
-                if (neg >= 0.0)
-                    q1[1] = neg;
-                else
-                    q1[1] = 2.0 * PI + neg;
+                double div = sqrt(R-d4*d4);
+                q1[0] = -atan2(A,B)+atan2(d4,div);
+                q1[1] = -atan2(A,B)+atan2(d4,-div);
             }
         }
         double q5[2][2];
@@ -290,7 +275,7 @@ namespace jaka_kinematics
         for (int i = 0; i < num_sols; i++)
         {
             for (int j = 0; j < 6; j++)
-                solution[6 * i + j] = rotate(solution[6 * i + j]);
+                solution[6 * i + j] = rotate(solution[6 * i + j],joint_min[j],joint_max[j]);
         }
         return num_sols;
     }
