@@ -212,8 +212,7 @@ namespace jaka_kinematics
                     {
                         // (-nx*s1 + ny*c1)*s6 + (-ox*s1 + oy*c1)*c6 = 0
                         // (-nx*s1 + ny*c1)*c6 - (-ox*s1 + oy*c1)*s6 = -s5
-                        // 这两个联合求解
-                        // (-nx*s1 + ny*c1)*c6 - (-ox*s1 + oy*c1)*s6 = -s5
+                        // 这两个联合求解的条件是 s5 != 0
 
                         q6 = atan2(SIGN(s5) * -(ox * s1 - oy * c1),
                                    SIGN(s5) * (nx * s1 - ny * c1));
@@ -226,7 +225,7 @@ namespace jaka_kinematics
                     ///////////////////////////// RRR joints (q2,q3,q4) ////////////////////////////
                     double c6 = cos(q6), s6 = sin(q6);
                     // J3
-                    // a3*c2 + a4*(-s2*sin(theta3) + c2*cos(theta3)) = 0 -d5*(-(nx*c1 + ny*s1)*s6 - (ox*c1 + oy*s1)*c6) - d6*(ax*c1 + ay*s1) + px*c1 + py*s1
+                    // a3*c2 + a4*(-s2*sin(theta3) + c2*cos(theta3)) = -d5*(-(nx*c1 + ny*s1)*s6 - (ox*c1 + oy*s1)*c6) - d6*(ax*c1 + ay*s1) + px*c1 + py*s1
                     double p13x = d5 * ((nx * c1 + ny * s1) * s6 + (ox * c1 + oy * s1) * c6) - d6 * (ax * c1 + ay * s1) + px * c1 + py * s1;
                     double p13y = -az * d6 - d1 + d5 * (nz * s6 + oz * c6) + pz;
                     double c3 = (p13x * p13x + p13y * p13y - a2 * a2 - a3 * a3) / (2.0 * a2 * a3);

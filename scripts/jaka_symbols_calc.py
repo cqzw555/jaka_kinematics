@@ -170,13 +170,19 @@ print(T2345[6] - A[6],"= 0")
 
 
 print("知道 theta1,theta5,theta6之后,以下矩阵的值全部可以算出来")
-T234 =T2*T3*T4
+T234 = T2*T3*T4
 B = T1_inv*T*T6_inv*T5_inv
 pprint(trigsimp(B))
 print("上面这个矩阵和下面矩阵相等")
 pprint(trigsimp(T234))
 print("联立以下方程,可以解出theta2和theta3")
-print(T234[3] ,"= 0", B[3])
-print(T234[11] ,"= 0", B[11])
+print(T234[3] ,"= ", B[3])
+print(T234[11] ,"= ", B[11])
 print("theta5和theta6的关系")
 print(T234[10] ,"= ", B[10])
+print(trigsimp(B[3]*B[3]+B[11]*B[11]))
+
+
+T1234 = T1*T2*T3*T4
+pprint(trigsimp(T1234))
+print(trigsimp(T1234[3]*T1234[3]+T1234[11]*T1234[11]))
