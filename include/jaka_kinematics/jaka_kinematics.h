@@ -1,6 +1,11 @@
 #ifndef JAKA_KINEMATICS_H
 #define JAKA_KINEMATICS_H
 #include <math.h>
+#define JAKA_KINEMATICS_DEBUG
+#ifdef JAKA_KINEMATICS_DEBUG
+#include <stdio.h>
+#endif
+
 #define PI M_PI
 namespace jaka_kinematics
 {
@@ -51,6 +56,5 @@ namespace jaka_kinematics
     // @param T       double
     // @return        1 if positive else -1
     int SIGN(double x);
-}
-;
+};
 #endif

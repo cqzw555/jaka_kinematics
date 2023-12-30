@@ -1,6 +1,6 @@
 
 #include "jaka_kinematics/jaka_kinematics.h"
-
+#define JAKA_KINEMATICS_DEBUG
 namespace jaka_kinematics
 {
 
@@ -108,6 +108,9 @@ namespace jaka_kinematics
 
     int inverse(double *matrix, double *solution, double q6_des)
     {
+#ifdef JAKA_KINEMATICS_DEBUG
+        int _j1 = 0, _j3 = 0;
+#endif
         int num_sols = 0;
         double nx, ny, nz, oz, ox, oy, ax, ay, az, pz, px, py;
         double *p = matrix;
@@ -136,7 +139,7 @@ namespace jaka_kinematics
         az = *p;
         p++;
         pz = *p;
-        // J1
+        // _j1
         double q1[2];
         {
             // d₆*(-ax*s1 + ay*c1) + px*s1 + py*c1 = d4
@@ -177,7 +180,12 @@ namespace jaka_kinematics
                 q1[1] = 2.0 * PI - arccos;
             }
             else if (d4 * d4 > R)
+            {
+#ifdef JAKA_KINEMATICS_DEBUG
+                _j1++;
+#endif
                 return num_sols;
+            }
             else
             {
                 double div = sqrt(R - d4 * d4);
@@ -233,6 +241,9 @@ namespace jaka_kinematics
                         c3 = SIGN(c3);
                     else if (fabs(c3) > 1.0)
                     {
+#ifdef JAKA_KINEMATICS_DEBUG
+                        _j3++;
+#endif
                         continue; // TODO NO SOLUTION
                     }
                     double arccos = acos(c3);
@@ -276,6 +287,13 @@ namespace jaka_kinematics
             for (int j = 0; j < 6; j++)
                 solution[6 * i + j] = rotate(solution[6 * i + j], joint_min[j], joint_max[j]);
         }
+#ifdef JAKA_KINEMATICS_DEBUG
+        if (num_sols == 0)
+        {
+            printf("求逆解失败\n");
+            printf("求解q1失败次数:%d，求解q3失败次数:%d\n", _j1, _j3);
+        }
+#endif
         return num_sols;
     }
 
