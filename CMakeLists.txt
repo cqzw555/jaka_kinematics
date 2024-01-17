@@ -16,12 +16,3 @@ find_package(pybind11 REQUIRED)
 
 add_library(jaka_kinematics SHARED src/jaka_kinematics.cpp)
 pybind11_add_module(jaka_kinematics_pybind11 src/jaka_kinematics_pybind11.cpp src/jaka_kinematics.cpp)
-
-# add_executable(jaka_kinematics_test src/main.cpp) 
-# add_executable(forward_test src/forward_test.cpp) 
-# add_executable(inverse_test src/inverse_test.cpp) 
-
-# target_link_libraries(jaka_kinematics_test jaka_kinematics)
-# target_link_libraries(forward_test jaka_kinematics)
-# target_link_libraries(inverse_test jaka_kinematics)
-# target_link_libraries(jaka_kinematics_pybind11 jaka_kinematics)
